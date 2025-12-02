@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>灵魂纹身图腾测试</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e6e6e6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: rgba(30, 30, 46, 0.85);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid #3949ab;
+        }
+        .header {
+            background: linear-gradient(90deg, #0f3460, #533483);
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid #3949ab;
+        }
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #ffd166, #f78c6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        .content {
+            padding: 40px;
+            min-height: 400px;
+        }
+        .question-container {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .question-container.active {
+            display: block;
+        }
+        .question-title {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: #ffd166;
+            line-height: 1.4;
+            border-left: 4px solid #f78c6b;
+            padding-left: 15px;
+        }
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .option {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 209, 102, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+        .option:hover {
+            background: rgba(255, 209, 102, 0.15);
+            border-color: #ffd166;
+            transform: translateY(-3px);
+        }
+        .option.selected {
+            background: rgba(120, 81, 169, 0.25);
+            border-color: #7851a9;
+            box-shadow: 0 5px 15px rgba(120, 81, 169, 0.4);
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-prev {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e6e6e6;
+        }
+        .btn-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .btn-next {
+            background: linear-gradient(90deg, #f78c6b, #ff8e9e);
+            color: white;
+            box-shadow: 0 4px 15px rgba(247, 140, 107, 0.4);
+        }
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(247, 140, 107, 0.6);
+        }
+        .progress-container {
+            margin-bottom: 25px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffd166, #f78c6b);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+        .progress-text {
+            text-align: right;
+            margin-top: 8px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        .result-container {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+        .prototype-title {
+            font-size: 2.5rem;
+            color: #ffd166;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .prototype-subtitle {
+            font-size: 1.3rem;
+            color: #f78c6b;
+            margin-bottom: 30px;
+            text-align: center;
+            font-style: italic;
+        }
+        .prototype-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+        }
+        .tattoo-prescription h3 {
+            color: #ffd166;
+            margin: 25px 0 15px 0;
+            font-size: 1.5rem;
+            border-bottom: 2px solid rgba(255, 209, 102, 0.3);
+            padding-bottom: 8px;
+        }
+        .prescription-item {
+            margin-bottom: 15px;
+            padding-left: 10px;
+            border-left: 3px solid #7851a9;
+            padding: 15px;
+            background: rgba(120, 81, 169, 0.1);
+            border-radius: 0 10px 10px 0;
+            margin-top: 10px;
+        }
+        .soul-annotation {
+            font-style: italic;
+            text-align: center;
+            margin-top: 40px;
+            padding: 25px;
+            background: rgba(15, 52, 96, 0.3);
+            border-radius: 15px;
+            font-size: 1.2rem;
+            color: #ffd166;
+            border: 1px dashed #3949ab;
+        }
+        .restart-btn {
+            display: block;
+            margin: 40px auto 0;
+            background: linear-gradient(90deg, #3949ab, #533483);
+            color: white;
+            padding: 16px 45px;
+            font-size: 1.2rem;
+        }
+        .restart-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(57, 73, 171, 0.5);
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 768px) {
+            .container { border-radius: 15px; }
+            .header { padding: 20px; }
+            .header h1 { font-size: 2.2rem; }
+            .content { padding: 25px; }
+            .question-title { font-size: 1.5rem; }
+            .option { padding: 16px; }
+            .btn { padding: 12px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>灵魂纹身图腾测试</h1>
+            <p>通过10道深度问题，探索你的内在原型，发现与你灵魂共鸣的永恒纹身图腾</p>
+        </div>
+        
+        <div class="content">
+            <!-- 问题容器 -->
+            <div id="questions-section">
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div class="progress-text">问题 <span id="current-q">1</span>/10</div>
+                </div>
+                
+                <div id="question-container" class="question-container active">
+                    <!-- 问题将通过JS动态插入 -->
+                </div>
+                
+                <div class="nav-buttons">
+                    <button class="btn btn-prev" id="prev-btn" onclick="prevQuestion()" disabled>上一题</button>
+                    <button class="btn btn-next" id="next-btn" onclick="nextQuestion()" disabled>下一题</button>
+                </div>
+            </div>
+            
+            <!-- 结果容器 -->
+            <div id="result-section" class="result-container">
+                <!-- 结果将通过JS动态插入 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===================== 决策树数据结构 =====================
+        // 8大纹身原型定义（保持不变）
+        const prototypes = {
+            '自由探险家': {
+                name: '自由探险家',
+                enName: 'The Pioneer',
+                description: '纯粹的动能与好奇心驱动者。你视生命为一场盛大探险，渴望突破边界，收集极致体验。果断、乐观，富有开拓精神，你的故事永远关于"下一步"。',
+                prescription: {
+                    style: '传统美式（Old School）、旅行图腾（Travel Tattoo）',
+                    elements: '世界地图、热气球、指南针、箭头、简笔山峰、"冒险"字样',
+                    position: '前臂、脚踝、小腿——便于随时看到，激励自己前行',
+                    notes: '你的故事充满动感，一个动态构图或地图元素会非常出彩。'
+                },
+                soulAnnotation: '“我的身体是航行日志，每个图案都是一个新坐标。”'
+            },
+            '不羁守护者': {
+                name: '不羁守护者',
+                enName: 'The Guardian',
+                description: '外显野性，内藏忠诚。你像狼或狮，拥有强大的领地意识和保护欲。对你认定的人与事，展现出无比的坚韧和牺牲精神。你的力量是沉默而可靠的。',
+                prescription: {
+                    style: '新传统（Neo-Traditional）、黑灰写实（Black & Grey Realism）',
+                    elements: '狼、狮子、熊、盾牌、荆棘、家族徽章轮廓、罗马数字日期',
+                    position: '上臂、胸口、后背肩胛骨——象征承担与力量的核心区域',
+                    notes: '充满力量的图腾需要极佳的肌肉线条和构图来衬托。'
+                },
+                soulAnnotation: '“我以温柔驯养野性，以纹身铭刻誓言。”'
+            },
+            '梦境织造者': {
+                name: '梦境织造者',
+                enName: 'The Dreamweaver',
+                description: '你是灵感的通道，将潜意识、梦境与情绪转化为瑰丽的视觉想象。你的内心世界色彩斑斓，有时近乎幻觉。艺术表达对你而言是生存必需，而非选择。',
+                prescription: {
+                    style: '水彩（Watercolor）、抽象表现主义（Abstract）、超现实主义（Surrealism）',
+                    elements: '星云、融化的钟表、奇花异草、眼睛、丝带、虚幻生物',
+                    position: '大腿、侧腰、整条手臂（袖套）——提供足够的"画布"来展现梦幻场景',
+                    notes: '如此独特的视觉想象，对纹身师的色彩理解和构图能力要求极高。'
+                },
+                soulAnnotation: '“我的皮肤是梦境与现实的交界膜。”'
+            },
+            '灵性共鸣者': {
+                name: '灵性共鸣者',
+                enName: 'The Echo',
+                description: '你与自然万物、宇宙节奏有着深刻的共情与连接。你相信符号、征兆和同步性，追求精神层面的成长与合一。你的能量是吸纳性的，安静而富有疗愈力。',
+                prescription: {
+                    style: '细线（Fine Line）、点刺（Dotwork）、素描（Sketch）',
+                    elements: '月亮周期、赫耳墨斯杖、脉轮符号、树木年轮、海浪声波、羽毛',
+                    position: '手腕、耳后、肋骨、脚背——贴近脉搏或能量点，更为私密和个人化',
+                    notes: '蕴含灵性的符号，其线条的纯净度和准确性至关重要。'
+                },
+                soulAnnotation: '“我将宇宙的低语，纹作身体的回音。”'
+            },
+            '理性构筑师': {
+                name: '理性构筑师',
+                enName: 'The Architect',
+                description: '世界对你而言是优美待解的方程。你崇尚绝对清晰、对称与功能之美。情感通过逻辑过滤，艺术通过结构表达。你的纹身是精密计算后的宣言，是个人哲学的视觉定理。',
+                prescription: {
+                    style: '几何（Geometric）、机械生物（Bio-mechanical）、极简（Minimalist）',
+                    elements: '柏拉图立体、斐波那契螺旋、齿轮、建筑剖面图、经纬线',
+                    position: '前臂（展示完整结构）、肩部三角区、脊椎两侧——强调对称和中心线',
+                    notes: '几何纹身极度依赖设计稿的精准和纹身师的稳定技术。'
+                },
+                soulAnnotation: '“我在混沌中寻找秩序，在身体上证明它存在。”'
+            },
+            '密码破译者': {
+                name: '密码破译者',
+                enName: 'The Cryptographer',
+                description: '你迷恋信息、编码与隐藏的意义。你认为真正的深度都包裹在层层面纱之下。你的表达是含蓄、智慧且带有游戏性质的。你的纹身是一个谜题，或是一把钥匙，只对懂的人开启。',
+                prescription: {
+                    style: '点刺（Dotwork）、黑白漫画（Blackwork）、信息图示（Infographic）',
+                    elements: '密码、藏书章、宇宙常数、分子式、图腾化的数据图、隐形墨水效果（UV）',
+                    position: '小臂内侧、脖颈后方、手指、靠近心脏的位置——隐秘或需要近距离解读',
+                    notes: '如何将复杂的信息转化为既简洁又富有美感的视觉符号？这正是设计的精髓。'
+                },
+                soulAnnotation: '“我的皮肤是一本加密的自传，我是唯一的作者与读者。”'
+            },
+            '史诗叙事者': {
+                name: '史诗叙事者',
+                enName: 'The Chronicler',
+                description: '你生命的意义在于经历、记忆与传承。你是一个活着的史官，用情感而非纸笔记录。你的纹身是章节、是纪念碑，纪念那些定义你的人和时刻，并渴望将故事流传下去。',
+                prescription: {
+                    style: '肖像写实（Portrait Realism）、日式（Japanese）、叙事性插画（Illustrative）',
+                    elements: '肖像、场景片段、重要日期、家徽、象征性的物品（如一把钥匙、一艘船）',
+                    position: '大腿、全臂/半臂袖套、后背、小腿——有足够空间展开叙事画卷',
+                    notes: '将一个复杂的故事浓缩成一个构图，需要高超的叙事技巧。'
+                },
+                soulAnnotation: '“我无法阻止时间流逝，但可以决定什么被永恒铭记。”'
+            },
+            '文化炼金师': {
+                name: '文化炼金师',
+                enName: 'The Alchemist',
+                description: '你是古老灵魂的现代容器。你从传统文化、神话或家族根源中汲取力量，并以当代的、个人化的方式重新诠释。你不满足于简单的复刻，而是进行创造性的融合与转化。',
+                prescription: {
+                    style: '新部落（Neo-Tribal）、神话插画（Mythological Illustration）、融合风格（Fusion）',
+                    elements: '神话生物（如龙、凤凰）、传统纹样现代化重构、元素符号（火水土风）、古文变形',
+                    position: '大臂、胸膛、背部中线、整条腿——适合大气、有仪式感的图案',
+                    notes: '融合与再造，是最考验设计师功力的。如何让古老的符号说出你的现代语言？'
+                },
+                soulAnnotation: '“我萃取传统的精华，在我的时代里将它重新炼成黄金。”'
+            }
+        };
+
+        // ===================== 核心修复：动态问题选择系统 =====================
+        // 问题库（18个问题）
+        const questions = {
+            'Q1': {
+                id: 'Q1',
+                text: '当你想到"纹身"这个词时，最先浮现的画面是？',
+                options: [
+                    { text: '一场华丽的冒险，一个故事的开端', value: 'A', tags: ['自由探险家', '史诗叙事者'] },
+                    { text: '一种力量的宣言，无畏的象征', value: 'B', tags: ['不羁守护者', '文化炼金师'] },
+                    { text: '一首流动的诗歌，情绪的延伸', value: 'C', tags: ['梦境织造者', '灵性共鸣者'] },
+                    { text: '一个复杂的谜题，等待被解读', value: 'D', tags: ['理性构筑师', '密码破译者'] }
+                ]
+            },
+            'Q2': {
+                id: 'Q2',
+                text: '哪种情绪状态最能激发你想要纹身的冲动？',
+                options: [
+                    { text: '自由、兴奋、探索的渴望', value: 'A', tags: ['自由探险家'] },
+                    { text: '坚定、保护、责任感', value: 'B', tags: ['不羁守护者'] },
+                    { text: '忧郁、浪漫、深刻的思考', value: 'C', tags: ['梦境织造者'] },
+                    { text: '好奇、求知、解构的欲望', value: 'D', tags: ['理性构筑师'] }
+                ]
+            },
+            'Q3': {
+                id: 'Q3',
+                text: '哪种艺术作品风格最让你产生共鸣？',
+                options: [
+                    { text: '街头涂鸦/波普艺术——直接、生动、有冲击力', value: 'A', tags: ['自由探险家'] },
+                    { text: '古典油画/雕塑——经典、力量、永恒', value: 'B', tags: ['不羁守护者'] },
+                    { text: '印象派/抽象表现主义——氛围、流动、情感', value: 'C', tags: ['梦境织造者'] },
+                    { text: '极简主义/构成主义——简洁、秩序、精准', value: 'D', tags: ['理性构筑师'] }
+                ]
+            },
+            'Q4': {
+                id: 'Q4',
+                text: '如果必须选择，你更倾向于？',
+                options: [
+                    { text: '鲜艳、饱满的色彩（红、蓝、绿等）', value: 'A', tags: ['梦境织造者'] },
+                    { text: '纯粹的黑灰渐变', value: 'B', tags: ['理性构筑师', '密码破译者'] },
+                    { text: '单色或极少的色彩点缀', value: 'C', tags: ['灵性共鸣者'] },
+                    { text: '不确定，完全取决于设计', value: 'D', tags: ['文化炼金师'] }
+                ]
+            },
+            'Q5': {
+                id: 'Q5',
+                text: '以下哪类元素最吸引你？',
+                options: [
+                    { text: '自然与动物（山脉、海洋、狮子、鲸鱼）', value: 'A', tags: ['自由探险家', '不羁守护者'] },
+                    { text: '神话与传说（龙、凤凰、神祇）', value: 'B', tags: ['文化炼金师'] },
+                    { text: '抽象与概念（几何形状、流体、宇宙）', value: 'C', tags: ['理性构筑师', '密码破译者'] },
+                    { text: '文字与符号（名言、密码、个人标记）', value: 'D', tags: ['密码破译者'] }
+                ]
+            },
+            'Q6': {
+                id: 'Q6',
+                text: '你如何看待纹身与时间的关系？',
+                options: [
+                    { text: '它记录我的过去，指向我的未来', value: 'A', tags: ['史诗叙事者'] },
+                    { text: '它是当下的宣言，永恒的代表', value: 'B', tags: ['不羁守护者'] },
+                    { text: '它会随时间变化，像生命一样', value: 'C', tags: ['梦境织造者'] },
+                    { text: '它是超越时间的符号', value: 'D', tags: ['灵性共鸣者'] }
+                ]
+            },
+            'Q7': {
+                id: 'Q7',
+                text: '你希望纹身讲述什么类型的故事？',
+                options: [
+                    { text: '我的旅程和探索', value: 'A', tags: ['自由探险家'] },
+                    { text: '我的信念和守护', value: 'B', tags: ['不羁守护者'] },
+                    { text: '我的梦境和情感', value: 'C', tags: ['梦境织造者'] },
+                    { text: '我的智慧和哲学', value: 'D', tags: ['理性构筑师'] }
+                ]
+            },
+            'Q8': {
+                id: 'Q8',
+                text: '你希望纹身如何与你的身体互动？',
+                options: [
+                    { text: '像一件合身的衣服，展示我的轮廓', value: 'A', tags: ['自由探险家'] },
+                    { text: '像一件盔甲，保护和强化我的身体', value: 'B', tags: ['不羁守护者'] },
+                    { text: '像皮肤本身的纹理，自然生长出来', value: 'C', tags: ['灵性共鸣者'] },
+                    { text: '像一件艺术品，独立存在', value: 'D', tags: ['理性构筑师'] }
+                ]
+            },
+            'Q9': {
+                id: 'Q9',
+                text: '你希望这个纹身被谁看到？',
+                options: [
+                    { text: '任何人，它是我的名片', value: 'A', tags: ['自由探险家'] },
+                    { text: '亲近的人，它代表我的内核', value: 'B', tags: ['不羁守护者'] },
+                    { text: '懂它的人，它是一个暗号', value: 'C', tags: ['密码破译者'] },
+                    { text: '主要是我自己，它是我的秘密花园', value: 'D', tags: ['灵性共鸣者'] }
+                ]
+            },
+            'Q10': {
+                id: 'Q10',
+                text: '完成纹身后，你最期待听到什么样的评价？',
+                options: [
+                    { text: '这太酷了！这背后有什么故事？', value: 'A', tags: ['自由探险家', '史诗叙事者'] },
+                    { text: '这很有力量，很符合你的气质', value: 'B', tags: ['不羁守护者'] },
+                    { text: '这真美，像一幅画', value: 'C', tags: ['梦境织造者'] },
+                    { text: '这很有深意，需要细细品味', value: 'D', tags: ['理性构筑师', '密码破译者'] }
+                ]
+            },
+            'Q11': {
+                id: 'Q11',
+                text: '你理想的纹身冒险程度是？',
+                options: [
+                    { text: '非常大，甚至可以是全身性的项目', value: 'A', tags: ['自由探险家'] },
+                    { text: '中等，从一个有意义的局部开始', value: 'B', tags: ['自由探险家'] },
+                    { text: '小型但精致，作为第一个尝试', value: 'C', tags: ['自由探险家'] }
+                ]
+            },
+            'Q12': {
+                id: 'Q12',
+                text: '你对细节的关注程度？',
+                options: [
+                    { text: '极高，细节决定一切', value: 'A', tags: ['理性构筑师'] },
+                    { text: '中等，整体感觉更重要', value: 'B', tags: ['文化炼金师'] },
+                    { text: '细节是惊喜，但不是必须', value: 'C', tags: ['自由探险家'] }
+                ]
+            },
+            'Q13': {
+                id: 'Q13',
+                text: '自由对你意味着？',
+                options: [
+                    { text: '探索未知的可能性', value: 'A', tags: ['自由探险家'] },
+                    { text: '不受约束的自我表达', value: 'B', tags: ['梦境织造者'] },
+                    { text: '不断变化和适应', value: 'C', tags: ['文化炼金师'] }
+                ]
+            },
+            'Q14': {
+                id: 'Q14',
+                text: '你的力量主要来自？',
+                options: [
+                    { text: '内在的信念和意志', value: 'A', tags: ['不羁守护者'] },
+                    { text: '与外界的互动和挑战', value: 'B', tags: ['自由探险家'] },
+                    { text: '守护重要的人和事', value: 'C', tags: ['不羁守护者'] }
+                ]
+            },
+            'Q15': {
+                id: 'Q15',
+                text: '艺术对你的意义是？',
+                options: [
+                    { text: '情绪的出口和表达', value: 'A', tags: ['梦境织造者'] },
+                    { text: '连接潜意识的桥梁', value: 'B', tags: ['灵性共鸣者'] },
+                    { text: '纯粹的审美享受', value: 'C', tags: ['文化炼金师'] }
+                ]
+            },
+            'Q16': {
+                id: 'Q16',
+                text: '你如何看待结构(规矩，顺序)与自由的关系？',
+                options: [
+                    { text: '在结构中寻找自由', value: 'A', tags: ['理性构筑师'] },
+                    { text: '用结构表达自由', value: 'B', tags: ['密码破译者'] },
+                    { text: '结构与自由是对立的', value: 'C', tags: ['自由探险家'] }
+                ]
+            },
+            'Q17': {
+                id: 'Q17',
+                text: '每种颜色对你来说？',
+                options: [
+                    { text: '有明确的情绪和意义', value: 'A', tags: ['梦境织造者'] },
+                    { text: '主要是美学选择', value: 'B', tags: ['文化炼金师'] },
+                    { text: '可以混合创造新意义', value: 'C', tags: ['文化炼金师'] }
+                ]
+            },
+            'Q18': {
+                id: 'Q18',
+                text: '黑白对你来说代表？',
+                options: [
+                    { text: '纯粹和本质', value: 'A', tags: ['理性构筑师'] },
+                    { text: '对比和张力', value: 'B', tags: ['密码破译者'] },
+                    { text: '无限的可能性', value: 'C', tags: ['灵性共鸣者'] }
+                ]
+            }
+        };
+
+        // ===================== 修复后的应用状态 =====================
+        let currentQuestionId = 'Q1';
+        let userAnswers = {};
+        let answeredQuestionIds = ['Q1']; // 已回答的问题ID
+        let availableQuestions = Object.keys(questions).filter(q => q !== 'Q1'); // 未使用的问题
+
+        // ===================== 修复后的核心函数 =====================
+        function initializeTest() {
+            showQuestion(currentQuestionId);
+            updateProgress();
+        }
+
+        function showQuestion(questionId) {
+            const question = questions[questionId];
+            const container = document.getElementById('question-container');
+            
+            let html = `<div class="question-title">${question.text}</div><div class="options">`;
+            
+            question.options.forEach((option, index) => {
+                const isSelected = userAnswers[questionId] === option.value;
+                html += `
+                    <div class="option ${isSelected ? 'selected' : ''}" 
+                         onclick="selectOption('${questionId}', '${option.value}')"
+                         data-value="${option.value}">
+                        ${option.text}
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+            
+            // 更新导航按钮状态
+            const hasPrev = answeredQuestionIds.length > 1;
+            document.getElementById('prev-btn').disabled = !hasPrev;
+            document.getElementById('next-btn').disabled = !userAnswers[questionId];
+            
+            // 更新进度显示
+            document.getElementById('current-q').textContent = answeredQuestionIds.length;
+        }
+
+        function selectOption(questionId, optionValue) {
+            // 移除当前问题的所有选中状态
+            const options = document.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            
+            // 添加当前选项的选中状态
+            const selectedOption = document.querySelector(`.option[data-value="${optionValue}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
+            
+            // 保存答案
+            userAnswers[questionId] = optionValue;
+            
+            // 启用下一步按钮
+            document.getElementById('next-btn').disabled = false;
+        }
+
+        // 修复：智能选择下一个问题
+        function getNextQuestionId() {
+            // 如果已经回答了10个问题，返回null表示测试结束
+            if (answeredQuestionIds.length >= 10) {
+                return null;
+            }
+            
+            // 从可用问题中随机选择一个（但优先选择与当前答案相关的问题）
+            const currentAnswer = userAnswers[currentQuestionId];
+            const currentQuestion = questions[currentQuestionId];
+            const currentOption = currentQuestion.options.find(opt => opt.value === currentAnswer);
+            
+            // 优先选择与当前答案标签相关的问题
+            if (currentOption && currentOption.tags) {
+                // 找出所有包含这些标签且未被使用的问题
+                const taggedQuestions = availableQuestions.filter(qId => {
+                    const q = questions[qId];
+                    return q.options.some(opt => 
+                        opt.tags && opt.tags.some(tag => currentOption.tags.includes(tag))
+                    );
+                });
+                
+                if (taggedQuestions.length > 0) {
+                    return taggedQuestions[Math.floor(Math.random() * taggedQuestions.length)];
+                }
+            }
+            
+            // 如果没有相关标签的问题，随机选择一个可用问题
+            if (availableQuestions.length > 0) {
+                return availableQuestions[Math.floor(Math.random() * availableQuestions.length)];
+            }
+            
+            // 如果所有问题都用完了，从已答问题中随机选择一个（除了当前问题）
+            const otherQuestions = Object.keys(questions).filter(
+                qId => qId !== currentQuestionId && answeredQuestionIds.includes(qId)
+            );
+            
+            return otherQuestions.length > 0 
+                ? otherQuestions[Math.floor(Math.random() * otherQuestions.length)]
+                : null;
+        }
+
+        function nextQuestion() {
+            const currentQuestion = questions[currentQuestionId];
+            const selectedOptionValue = userAnswers[currentQuestionId];
+            
+            if (!selectedOptionValue) {
+                alert('请选择一个选项');
+                return;
+            }
+            
+            // 获取下一个问题ID
+            const nextQuestionId = getNextQuestionId();
+            
+            // 如果没有下一个问题（已答10题），显示结果
+            if (!nextQuestionId) {
+                calculateResult();
+                return;
+            }
+            
+            // 更新状态
+            currentQuestionId = nextQuestionId;
+            answeredQuestionIds.push(nextQuestionId);
+            
+            // 从可用问题中移除
+            const index = availableQuestions.indexOf(nextQuestionId);
+            if (index > -1) {
+                availableQuestions.splice(index, 1);
+            }
+            
+            showQuestion(currentQuestionId);
+            updateProgress();
+        }
+
+        function prevQuestion() {
+            if (answeredQuestionIds.length > 1) {
+                // 移除当前问题
+                const currentQ = answeredQuestionIds.pop();
+                availableQuestions.push(currentQ);
+                
+                // 获取上一个问题
+                currentQuestionId = answeredQuestionIds[answeredQuestionIds.length - 1];
+                
+                // 恢复上一个问题的答案选择状态
+                showQuestion(currentQuestionId);
+                updateProgress();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (answeredQuestionIds.length / 10) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+        }
+
+        function calculateResult() {
+            // 确保回答了10个问题
+            if (answeredQuestionIds.length < 10) {
+                alert('请完成所有10个问题');
+                return;
+            }
+            
+            // 计算每个原型的得分
+            const scores = {};
+            Object.keys(prototypes).forEach(proto => scores[proto] = 0);
+            
+            // 根据用户答案增加对应原型的分数
+            Object.entries(userAnswers).forEach(([qId, answer]) => {
+                const question = questions[qId];
+                const selectedOption = question.options.find(opt => opt.value === answer);
+                
+                if (selectedOption && selectedOption.tags) {
+                    selectedOption.tags.forEach(tag => {
+                        if (scores[tag] !== undefined) {
+                            scores[tag] += 1;
+                        }
+                    });
+                }
+            });
+            
+            // 找出得分最高的原型
+            let maxScore = 0;
+            let resultPrototype = null;
+            
+            Object.entries(scores).forEach(([proto, score]) => {
+                if (score > maxScore) {
+                    maxScore = score;
+                    resultPrototype = proto;
+                }
+            });
+            
+            // 如果分数相同，选择第一个（可以改进为更复杂的逻辑）
+            if (!resultPrototype) {
+                resultPrototype = Object.keys(prototypes)[0];
+            }
+            
+            // 显示结果
+            showResult(resultPrototype);
+        }
+
+        function showResult(prototypeName) {
+            const prototype = prototypes[prototypeName];
+            const resultSection = document.getElementById('result-section');
+            const questionSection = document.getElementById('questions-section');
+            
+            // 构建结果HTML
+            let html = `
+                <h2 class="prototype-title">${prototype.name}</h2>
+                <div class="prototype-subtitle">${prototype.enName}</div>
+                
+                <div class="prototype-description">
+                    ${prototype.description}
+                </div>
+                
+                <div class="tattoo-prescription">
+                    <h3>你的灵魂纹身处方</h3>
+                    <div class="prescription-item">
+                        <strong>推荐风格：</strong> ${prototype.prescription.style}
+                    </div>
+                    <div class="prescription-item">
+                        <strong>核心元素：</strong> ${prototype.prescription.elements}
+                    </div>
+                    <div class="prescription-item">
+                        <strong>寓意位置：</strong> ${prototype.prescription.position}
+                    </div>
+                    <div class="prescription-item">
+                        <strong>专业建议：</strong> ${prototype.prescription.notes}
+                    </div>
+                </div>
+                
+                <div class="soul-annotation">
+                    ${prototype.soulAnnotation}
+                </div>
+                
+                <div class="test-summary" style="margin-top:30px; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px;">
+                    <p><strong>测试总结：</strong>你已回答了 ${answeredQuestionIds.length} 个问题，与 <strong>${prototype.name}</strong> 的匹配度最高。</p>
+                    <p style="margin-top:10px; font-size:0.9rem;">感谢完成测试！如需定制专属纹身设计，请联系专业纹身师。</p>
+                </div>
+                
+                <button class="btn restart-btn" onclick="restartTest()">重新测试</button>
+            `;
+            
+            resultSection.innerHTML = html;
+            
+            // 切换显示
+            questionSection.style.display = 'none';
+            resultSection.style.display = 'block';
+        }
+
+        function restartTest() {
+            // 重置所有状态
+            currentQuestionId = 'Q1';
+            userAnswers = {};
+            answeredQuestionIds = ['Q1'];
+            availableQuestions = Object.keys(questions).filter(q => q !== 'Q1');
+            
+            // 切换显示
+            document.getElementById('questions-section').style.display = 'block';
+            document.getElementById('result-section').style.display = 'none';
+            
+            // 重新初始化测试
+            initializeTest();
+        }
+
+        // 页面加载时初始化测试
+        window.onload = initializeTest;
+    </script>
+</body>
+</html>
